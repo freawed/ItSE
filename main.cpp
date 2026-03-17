@@ -51,7 +51,6 @@ int main() {
         coeffs = horner(coeffs, r);
     }
 
-    // 🔽 ТУТ ГЛАВНОЕ ИЗМЕНЕНИЕ
     if (coeffs.size() == 4) {
 
         if (std::abs(coeffs[0]) > EPS) {
@@ -61,20 +60,26 @@ int main() {
                 if (std::isfinite(x))
                     roots.push_back(x);
             }
-        }
-        else if (std::abs(coeffs[1]) > EPS) {
+        } else if (std::abs(coeffs[1]) > EPS) {
             std::vector<double> r = viet(coeffs);
-
             for (double x : r) {
                 if (std::isfinite(x))
                     roots.push_back(x);
             }
-        }
-        else if (std::abs(coeffs[2]) > EPS) {
+        } else if (std::abs(coeffs[2]) > EPS) {
             double x = line_eq(coeffs);
-
             if (std::isfinite(x))
                 roots.push_back(x);
+        } else if (std::abs(coeffs[3]) > EPS) {
+            if (roots.empty()) {
+                std::cout << "No roots found.\n";
+                return 0;
+            }
+        } else if (std::abs(coeffs[3] < EPS)) {
+            if (roots.empty()) {
+                std::cout << "No roots found.\n";
+                return 0;
+            }
         }
     }
 
