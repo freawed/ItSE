@@ -10,26 +10,36 @@ const int MAX_ITER = 1000;
 int main() {
     double a, b, c, d, n, m, k;
 
-    std::cout << "Enter coefficients a b c d n m k:\n";
-    std::cin >> a >> b >> c >> d >> n >> m >> k;
+    while (true) {
+        std::cout << "Enter coefficients a b c d n m k:\n";
+
+        if (std::cin >> a >> b >> c >> d >> n >> m >> k) {
+            break; // всё ок
+        }
+    
+        std::cout << "Invalid input! Please enter numbers only.\n";
+        
+        std::cin.clear(); // сброс ошибки
+        std::cin.ignore(10000, '\n'); // очистка буфера
+    }
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
     std::vector<double> roots;
 
     if (std::abs(coeffs[0]) > EPS) {
-        double r = combinedMethod(coeffs);
+        double r = combined(coeffs);
         roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
-        double r = chordMethod(coeffs);
+        double r = chord(coeffs);
         roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
-        double r = newtonMethod(coeffs);
+        double r = newton(coeffs);
         roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
