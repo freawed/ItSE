@@ -28,41 +28,43 @@ std::vector<double> viet(double a, double b, double c) { // cn, cm, ck
 }
 
 
-    std::vector<double> cardano(double a, double b, double c, double d) { // cd, cn, cm, ck
-        std::vector<double> roots;
 
-        double p = (3 * a * c - b * b) / (3 * a * a);
-        double q = (2 * b * b * b - 9 * a * b * c + 27 * a * a * d) / (27 * a * a * a);
 
-        double D = (q * q) / 4.0 + (p * p * p) / 27.0;
-        double shift = b / (3.0 * a);
 
-        if (D > EPS) {
-            double u = cbrt(-q / 2.0 + std::sqrt(D));
-            double v = cbrt(-q / 2.0 - std::sqrt(D));
+std::vector<double> cardano(double a, double b, double c, double d) { // cd, cn, cm, ck
+    std::vector<double> roots;
 
-            double y = u + v;
+    double p = (3 * a * c - b * b) / (3 * a * a);
+    double q = (2 * b * b * b - 9 * a * b * c + 27 * a * a * d) / (27 * a * a * a);
+
+    double D = (q * q) / 4.0 + (p * p * p) / 27.0;
+    double shift = b / (3.0 * a);
+
+    if (D > EPS) {
+        double u = cbrt(-q / 2.0 + std::sqrt(D));
+        double v = cbrt(-q / 2.0 - std::sqrt(D));
+
+        double y = u + v;
+        roots.push_back(y - shift);
+    } else if (std::abs(D) <= EPS) {
+        double u = cbrt(-q / 2.0);
+
+        roots.push_back(2 * u - shift);
+        roots.push_back(-u - shift);
+    } else {
+        double r = std::sqrt(-(p*p*p) / 27.0);
+        double arg = -q / (2.0 * r);
+        arg = std::max(-1.0, std::min(1.0, arg));
+
+        double phi = std::acos(arg);
+        double m = 2.0 * std::sqrt(-p / 3.0);
+        for (int k = 0; k < 3; ++k) {
+            double y = m * std::cos((phi + 2*M_PI*k)/3);
             roots.push_back(y - shift);
-        } else if (std::abs(D) <= EPS) {
-            double u = cbrt(-q / 2.0);
-
-            roots.push_back(2 * u - shift);
-            roots.push_back(-u - shift);
-        } else {
-            double r = std::sqrt(-(p*p*p) / 27.0);
-            double arg = -q / (2.0 * r);
-            arg = std::max(-1.0, std::min(1.0, arg));
-
-            double phi = std::acos(arg);
-
-            double m = 2.0 * std::sqrt(-p / 3.0);
-            for (int k = 0; k < 3; ++k) {
-                double y = m * std::cos((phi + 2*M_PI*k)/3);
-                roots.push_back(y - shift);
-            }
         }
-        return roots;
     }
+    return roots;
+}
 
 
 std::vector<double> horner(const std::vector<double>& coeffs, double r) {
@@ -75,7 +77,7 @@ std::vector<double> horner(const std::vector<double>& coeffs, double r) {
 }
 
 
-double evaluate(const std::vector<double>& coeffs, double x) {
+double f(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     for (double c: coeffs)
         result = result * x + c;
@@ -83,7 +85,7 @@ double evaluate(const std::vector<double>& coeffs, double x) {
 }
 
 
-double firstDerivative(const std::vector<double>& coeffs, double x) {
+double f1(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;
     for (int i = 0; i < n; ++i)
@@ -92,7 +94,7 @@ double firstDerivative(const std::vector<double>& coeffs, double x) {
 }
 
 
-double secondDerivative(const std::vector<double>& coeffs, double x) {
+double f2(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;  
     for (int i = 0; i < n - 1; ++i)
@@ -117,10 +119,10 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
     double R = lagrangeBound(coeffs);
     double step = R / 5000.0;
     double x1 = -R;
-    double f1 = evaluate(coeffs, x1);
+    double f1 = f(coeffs, x1);
         
     for (double x2 = -R + step; x2 <= R; x2 += step) {
-        double f2 = evaluate(coeffs, x2);
+        double f2 = f(coeffs, x2);
             
         if (f1 * f2 <= 0) {
             a = x1;
@@ -133,8 +135,8 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
         if (std::abs(f1) < EPS) {
             a = x1 - step;
             b = x1 + step;
-            fa = evaluate(coeffs, a);
-            fb = evaluate(coeffs, b);
+            fa = f(coeffs, a);
+            fb = f(coeffs, b);
             return true;
         }
             
@@ -145,7 +147,7 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
 }
 
 
-double chordMethod(const std::vector<double>& coeffs) {
+double chord(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
         return NAN;
@@ -161,7 +163,7 @@ double chordMethod(const std::vector<double>& coeffs) {
             x = (a * fb - b * fa) / (fb - fa);
         }
             
-        double fx = evaluate(coeffs, x);
+        double fx = f(coeffs, x);
             
         if (std::abs(fx) < EPS || std::abs(x - x_prev) < EPS) {
             return x;
@@ -180,13 +182,13 @@ double chordMethod(const std::vector<double>& coeffs) {
 }
 
 
-double newtonMethod(const std::vector<double>& coeffs) {
+double newton(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
         return NAN;
     }
     double mid = (a + b) / 2.0;
-    double f2_mid = secondDerivative(coeffs, mid);
+    double f2_mid = f2(coeffs, mid);
     double xn;
         
     if (fa * f2_mid > 0) {
@@ -202,8 +204,8 @@ double newtonMethod(const std::vector<double>& coeffs) {
     do {
         iter++;
         x0 = xn;    
-        double fx = evaluate(coeffs, xn);
-        double dfx = firstDerivative(coeffs, xn);
+        double fx = f(coeffs, xn);
+        double dfx = f1(coeffs, xn);
         double x_new;
             
         if (std::abs(dfx) < EPS) {
@@ -216,7 +218,7 @@ double newtonMethod(const std::vector<double>& coeffs) {
             x_new = (a + b) / 2.0;
         }
             
-        double f_new = evaluate(coeffs, x_new);
+        double f_new = f(coeffs, x_new);
         if (fa * f_new <= 0) {
             b = x_new;
             fb = f_new;
@@ -226,13 +228,13 @@ double newtonMethod(const std::vector<double>& coeffs) {
         }
         xn = x_new;    
         if (iter > MAX_ITER) break;    
-        } while (std::abs(xn - x0) > EPS && std::abs(evaluate(coeffs, xn)) > EPS);
+        } while (std::abs(xn - x0) > EPS && std::abs(f(coeffs, xn)) > EPS);
         
         return xn;
     }
 
 
-double combinedMethod(const std::vector<double>& coeffs) {
+double combined(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
         return NAN;
@@ -243,9 +245,9 @@ double combinedMethod(const std::vector<double>& coeffs) {
         
     for (int iter = 0; iter < MAX_ITER; iter++) {
         double x_chord = (a * fb - b * fa) / (fb - fa);
-        double f_chord = evaluate(coeffs, x_chord);
+        double f_chord = f(coeffs, x_chord);
             
-        double df_chord = firstDerivative(coeffs, x_chord);
+        double df_chord = f1(coeffs, x_chord);
         double x_newton;
             
         if (std::abs(df_chord) < EPS) {
@@ -255,7 +257,7 @@ double combinedMethod(const std::vector<double>& coeffs) {
         }
             
         xn = x_newton;
-        double fx = evaluate(coeffs, xn);
+        double fx = f(coeffs, xn);
             
         if (std::abs(fx) < EPS || (iter > 0 && std::abs(xn - x_prev) < EPS)) {
             return xn;
