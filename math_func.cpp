@@ -7,12 +7,16 @@
 const double EPS = 1e-12;
 const int MAX_ITER = 1000;
 
-double line_eq(double m, double k) { // cm, ck
-    return -k / m;
+double line_eq(const std::vector<double>& coeffs) { // cm, ck
+    return -coeffs[1] / coeffs[0];
 }
 
-std::vector<double> viet(double a, double b, double c) { // cn, cm, ck 
+std::vector<double> viet(const std::vector<double>& coeffs) { // cn, cm, ck 
     std::vector<double> roots;
+    double a = coeffs[0];
+    double b = coeffs[1];
+    double c = coeffs[2];
+
     double D = b * b - 4 * a * c;
 
     if (D > EPS) {
@@ -31,8 +35,12 @@ std::vector<double> viet(double a, double b, double c) { // cn, cm, ck
 
 
 
-std::vector<double> cardano(double a, double b, double c, double d) { // cd, cn, cm, ck
+std::vector<double> cardano(const std::vector<double>& coeffs) { // cd, cn, cm, ck
     std::vector<double> roots;
+    double a = coeffs[0];
+    double b = coeffs[1];
+    double c = coeffs[2];
+    double d = coeffs[3];
 
     double p = (3 * a * c - b * b) / (3 * a * a);
     double q = (2 * b * b * b - 9 * a * b * c + 27 * a * a * d) / (27 * a * a * a);

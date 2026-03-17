@@ -5,9 +5,9 @@
 #include <vector>
 #include <algorithm>        
 
-double line_eq(double m, double k);
-std::vector<double> viet(double a, double b, double c);
-std::vector<double> cardano(double a, double b, double c, double d);
+double line_eq(const std::vector<double>& coeffs);
+std::vector<double> viet(const std::vector<double>& coeffs);
+std::vector<double> cardano(const std::vector<double>& coeffs);
 std::vector<double> horner(const std::vector<double>& coeffs, double r);
 double f(const std::vector<double>& coeffs, double x);
 double lagrangeBound(const std::vector<double>& coeffs);

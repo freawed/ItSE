@@ -21,10 +21,10 @@ int main() {
         double extra;
 
         if ((iss >> a >> b >> c >> d >> n >> m >> k) && !(iss >> extra)) {
-            break; 
+            break;
         }
 
-        std::cout << "Error: Enter 7 numeric values ​​correctly!\n";
+        std::cout << "Error: Enter 7 numeric values correctly!\n";
     }
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
@@ -32,63 +32,61 @@ int main() {
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = combined(coeffs);
-        if (!std::isnan(r) && std::isfinite(r))
+        if (std::isfinite(r))
             roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = chord(coeffs);
-        if (!std::isnan(r) && std::isfinite(r))
+        if (std::isfinite(r))
             roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = newton(coeffs);
-        if (!std::isnan(r) && std::isfinite(r))
+        if (std::isfinite(r))
             roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
+    // 🔽 ТУТ ГЛАВНОЕ ИЗМЕНЕНИЕ
     if (coeffs.size() == 4) {
 
-        double A = coeffs[0];
-        double B = coeffs[1];
-        double C = coeffs[2];
-        double D = coeffs[3];
+        if (std::abs(coeffs[0]) > EPS) {
+            std::vector<double> r = cardano(coeffs);
 
-        if (std::abs(A) > EPS) {
-            std::vector<double> r = cardano(A, B, C, D);
             for (double x : r) {
-                if (!std::isnan(x) && std::isfinite(x))
-                     roots.push_back(x);
+                if (std::isfinite(x))
+                    roots.push_back(x);
             }
         }
-        else if (std::abs(B) > EPS) {
-            std::vector<double> r = viet(B, C, D);
+        else if (std::abs(coeffs[1]) > EPS) {
+            std::vector<double> r = viet(coeffs);
+
             for (double x : r) {
-                if (!std::isnan(x) && std::isfinite(x))
-                     roots.push_back(x);
+                if (std::isfinite(x))
+                    roots.push_back(x);
             }
         }
-        else if (std::abs(C) > EPS) {
-            double x = line_eq(C, D);
-            if (!std::isnan(x) && std::isfinite(x))
+        else if (std::abs(coeffs[2]) > EPS) {
+            double x = line_eq(coeffs);
+
+            if (std::isfinite(x))
                 roots.push_back(x);
         }
     }
 
     std::cout << "\nRoots:\n";
-    for (double r : roots) {
-        if (!std::isnan(r) && std::isfinite(r))
-            std::cout << r << std::endl;
+    if (roots.empty()) {
+        std::cout << "No roots found.\n";
+    } else {
+        for (double r : roots) {
+            if (std::isfinite(r))
+                std::cout << r << std::endl;
+        }
     }
-
 
     return 0;
 }
-
-
-
-
