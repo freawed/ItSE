@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <sstream>
 #include "math_func.h"
 
 const double EPS = 1e-12;
@@ -13,14 +14,17 @@ int main() {
     while (true) {
         std::cout << "Enter coefficients a b c d n m k:\n";
 
-        if (std::cin >> a >> b >> c >> d >> n >> m >> k) {
-            break; // всё ок
+        std::string line;
+        std::getline(std::cin, line);
+
+        std::istringstream iss(line);
+        double extra;
+
+        if ((iss >> a >> b >> c >> d >> n >> m >> k) && !(iss >> extra)) {
+            break; 
         }
-    
-        std::cout << "Invalid input! Please enter numbers only.\n";
-        
-        std::cin.clear(); // сброс ошибки
-        std::cin.ignore(10000, '\n'); // очистка буфера
+
+        std::cout << "Error: Enter 7 numeric values ​​correctly!\n";
     }
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
@@ -28,19 +32,22 @@ int main() {
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = combined(coeffs);
-        roots.push_back(r);
+        if (!std::isnan(r) && std::isfinite(r))
+            roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = chord(coeffs);
-        roots.push_back(r);
+        if (!std::isnan(r) && std::isfinite(r))
+            roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = newton(coeffs);
-        roots.push_back(r);
+        if (!std::isnan(r) && std::isfinite(r))
+            roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
@@ -53,22 +60,31 @@ int main() {
 
         if (std::abs(A) > EPS) {
             std::vector<double> r = cardano(A, B, C, D);
-            roots.insert(roots.end(), r.begin(), r.end());
+            for (double x : r) {
+                if (!std::isnan(x) && std::isfinite(x))
+                     roots.push_back(x);
+            }
         }
         else if (std::abs(B) > EPS) {
             std::vector<double> r = viet(B, C, D);
-            roots.insert(roots.end(), r.begin(), r.end());
+            for (double x : r) {
+                if (!std::isnan(x) && std::isfinite(x))
+                     roots.push_back(x);
+            }
         }
         else if (std::abs(C) > EPS) {
-            roots.push_back(line_eq(C, D));
+            double x = line_eq(C, D);
+            if (!std::isnan(x) && std::isfinite(x))
+                roots.push_back(x);
         }
     }
 
     std::cout << "\nRoots:\n";
     for (double r : roots) {
-    if (!std::isnan(r) && std::isfinite(r))
-        std::cout << r << std::endl;
+        if (!std::isnan(r) && std::isfinite(r))
+            std::cout << r << std::endl;
     }
+
 
     return 0;
 }
