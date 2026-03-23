@@ -7,11 +7,13 @@
 const double EPS = 1e-12;
 const int MAX_ITER = 1000;
 
-double line_eq(const std::vector<double>& coeffs) { // cm, ck
+
+double line_eq(const std::vector<double>& coeffs) {
     return -coeffs[1] / coeffs[0];
 }
 
-std::vector<double> viet(const std::vector<double>& coeffs) { // cn, cm, ck 
+
+std::vector<double> viet(const std::vector<double>& coeffs) {
     std::vector<double> roots;
     double a = coeffs[0];
     double b = coeffs[1];
@@ -32,10 +34,7 @@ std::vector<double> viet(const std::vector<double>& coeffs) { // cn, cm, ck
 }
 
 
-
-
-
-std::vector<double> cardano(const std::vector<double>& coeffs) { // cd, cn, cm, ck
+std::vector<double> cardano(const std::vector<double>& coeffs) {
     std::vector<double> roots;
     double a = coeffs[0];
     double b = coeffs[1];
@@ -136,7 +135,7 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
             a = x1;
             b = x2;
             fa = f1;
-            fb = f2;
+            fb = f2;        
             return true;
         }
             

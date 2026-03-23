@@ -23,12 +23,12 @@ int main() {
         if ((iss >> a >> b >> c >> d >> n >> m >> k) && !(iss >> extra)) {
             break;
         }
-
         std::cout << "Error: Enter 7 numeric values correctly!\n";
     }
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
     std::vector<double> roots;
+
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = combined(coeffs);
@@ -37,12 +37,14 @@ int main() {
         coeffs = horner(coeffs, r);
     }
 
+
     if (std::abs(coeffs[0]) > EPS) {
         double r = chord(coeffs);
         if (std::isfinite(r))
             roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
+
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = newton(coeffs);
@@ -51,35 +53,31 @@ int main() {
         coeffs = horner(coeffs, r);
     }
 
-    if (coeffs.size() == 4) {
 
-        if (std::abs(coeffs[0]) > EPS) {
-            std::vector<double> r = cardano(coeffs);
+    if (std::abs(coeffs[0]) > EPS) {
+        std::vector<double> r = cardano(coeffs);
+        for (double x : r)
+            if (std::isfinite(x)) roots.push_back(x);
 
-            for (double x : r) {
-                if (std::isfinite(x))
-                    roots.push_back(x);
-            }
-        } else if (std::abs(coeffs[1]) > EPS) {
-            std::vector<double> r = viet(coeffs);
-            for (double x : r) {
-                if (std::isfinite(x))
-                    roots.push_back(x);
-            }
-        } else if (std::abs(coeffs[2]) > EPS) {
-            double x = line_eq(coeffs);
-            if (std::isfinite(x))
-                roots.push_back(x);
-        } else if (std::abs(coeffs[3]) > EPS) {
-            if (roots.empty()) {
-                std::cout << "No roots found.\n";
-                return 0;
-            }
-        } else if (std::abs(coeffs[3] < EPS)) {
-            if (roots.empty()) {
-                std::cout << "No roots found.\n";
-                return 0;
-            }
+    } else if (std::abs(coeffs[1]) > EPS) {
+        std::vector<double> r = viet(coeffs);
+        for (double x : r)
+            if (std::isfinite(x)) roots.push_back(x);
+
+    } else if (std::abs(coeffs[2]) > EPS) {
+        double x = line_eq(coeffs);
+        if (std::isfinite(x)) roots.push_back(x);
+
+    } else if (std::abs(coeffs[3]) > EPS) {
+        if (roots.empty()) {
+            std::cout << "No roots found.\n";
+            return 0;
+        }
+
+    } else {
+        if (roots.empty()) {
+            std::cout << "Any real number is a solution.\n";
+            return 0;
         }
     }
 
