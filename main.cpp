@@ -40,16 +40,14 @@ int main() {
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = chord(coeffs);
-        if (std::isfinite(r))
-            roots.push_back(r);
+        roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
 
     if (std::abs(coeffs[0]) > EPS) {
         double r = newton(coeffs);
-        if (std::isfinite(r))
-            roots.push_back(r);
+        roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
@@ -57,23 +55,19 @@ int main() {
     if (std::abs(coeffs[0]) > EPS) {
         std::vector<double> r = cardano(coeffs);
         for (double x : r)
-            if (std::isfinite(x)) roots.push_back(x);
-
+            roots.push_back(x);
     } else if (std::abs(coeffs[1]) > EPS) {
         std::vector<double> r = viet(coeffs);
         for (double x : r)
-            if (std::isfinite(x)) roots.push_back(x);
-
+            roots.push_back(x);
     } else if (std::abs(coeffs[2]) > EPS) {
         double x = line_eq(coeffs);
-        if (std::isfinite(x)) roots.push_back(x);
-
+        roots.push_back(x);
     } else if (std::abs(coeffs[3]) > EPS) {
         if (roots.empty()) {
             std::cout << "No roots found.\n";
             return 0;
         }
-
     } else {
         if (roots.empty()) {
             std::cout << "Any real number is a solution.\n";
@@ -81,17 +75,13 @@ int main() {
         }
     }
 
-    std::cout << "\nRoots:\n";
-    if (roots.empty()) {
-        std::cout << "No roots found.\n";
-    } else {
-        roots = unique_roots(roots, 0.01);
+    std::cout << "\nRoots:\n";{
+    roots = unique_roots(roots, 0.01);
         
-        for (double r : roots) {
-            if (std::isfinite(r))
-                std::cout << r << std::endl;
+    for (double r : roots) {
+        if (std::isfinite(r))
+            std::cout << r << std::endl;
         }
     }
-
     return 0;
 }

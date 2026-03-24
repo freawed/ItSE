@@ -1,5 +1,4 @@
 #define _USE_MATH_DEFINES
-#include <iostream>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -285,10 +284,7 @@ double combined(const std::vector<double>& coeffs) {
 
 
 std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
-    if (roots.empty()) return roots;
-
     std::sort(roots.begin(), roots.end());
-
     std::vector<double> result;
     result.push_back(roots[0]);
 
@@ -297,6 +293,5 @@ std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
             result.push_back(roots[i]);
         }
     }
-
     return result;
 }
