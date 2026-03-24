@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include "math_func.h"
 
 const double EPS = 1e-12;
@@ -92,7 +93,7 @@ double f(const std::vector<double>& coeffs, double x) {
 }
 
 
-double f1(const std::vector<double>& coeffs, double x) {
+double df(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;
     for (int i = 0; i < n; ++i)
@@ -101,7 +102,7 @@ double f1(const std::vector<double>& coeffs, double x) {
 }
 
 
-double f2(const std::vector<double>& coeffs, double x) {
+double ddf(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;  
     for (int i = 0; i < n - 1; ++i)
@@ -195,7 +196,7 @@ double newton(const std::vector<double>& coeffs) {
         return NAN;
     }
     double mid = (a + b) / 2.0;
-    double f2_mid = f2(coeffs, mid);
+    double f2_mid = ddf(coeffs, mid);
     double xn;
         
     if (fa * f2_mid > 0) {
@@ -212,7 +213,7 @@ double newton(const std::vector<double>& coeffs) {
         iter++;
         x0 = xn;    
         double fx = f(coeffs, xn);
-        double dfx = f1(coeffs, xn);
+        double dfx = df(coeffs, xn);
         double x_new;
             
         if (std::abs(dfx) < EPS) {
@@ -254,7 +255,7 @@ double combined(const std::vector<double>& coeffs) {
         double x_chord = (a * fb - b * fa) / (fb - fa);
         double f_chord = f(coeffs, x_chord);
             
-        double df_chord = f1(coeffs, x_chord);
+        double df_chord = df(coeffs, x_chord);
         double x_newton;
             
         if (std::abs(df_chord) < EPS) {
@@ -280,4 +281,22 @@ double combined(const std::vector<double>& coeffs) {
     }
         
     return xn;
+}
+
+
+std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
+    if (roots.empty()) return roots;
+
+    std::sort(roots.begin(), roots.end());
+
+    std::vector<double> result;
+    result.push_back(roots[0]);
+
+    for (size_t i = 1; i < roots.size(); ++i) {
+        if (std::abs(roots[i] - result.back()) >= eps) {
+            result.push_back(roots[i]);
+        }
+    }
+
+    return result;
 }

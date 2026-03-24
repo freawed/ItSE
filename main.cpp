@@ -85,6 +85,8 @@ int main() {
     if (roots.empty()) {
         std::cout << "No roots found.\n";
     } else {
+        roots = unique_roots(roots, 0.01);
+        
         for (double r : roots) {
             if (std::isfinite(r))
                 std::cout << r << std::endl;
