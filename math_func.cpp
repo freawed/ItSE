@@ -4,15 +4,17 @@
 #include <algorithm>
 #include "math_func.h"
 
+
 const double EPS = 1e-12;
 const int MAX_ITER = 1000;
 
 
+// нахождение корней линейного уравнения
 double line_eq(const std::vector<double>& coeffs) {
     return -coeffs[1] / coeffs[0];
 }
 
-
+// нахождение корней по формуле Виета
 std::vector<double> viet(const std::vector<double>& coeffs) {
     std::vector<double> roots;
     double a = coeffs[0];
@@ -34,6 +36,7 @@ std::vector<double> viet(const std::vector<double>& coeffs) {
 }
 
 
+// нахождение корней методом Кардано
 std::vector<double> cardano(const std::vector<double>& coeffs) {
     std::vector<double> roots;
     double a = coeffs[0];
@@ -74,6 +77,7 @@ std::vector<double> cardano(const std::vector<double>& coeffs) {
 }
 
 
+// понижение степени многочлена по схеме Горнера
 std::vector<double> horner(const std::vector<double>& coeffs, double r) {
     int n = coeffs.size();
     std::vector<double> new_coeffs(n - 1);
@@ -84,6 +88,7 @@ std::vector<double> horner(const std::vector<double>& coeffs, double r) {
 }
 
 
+// значение функции в точке x
 double f(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     for (double c: coeffs)
@@ -92,6 +97,7 @@ double f(const std::vector<double>& coeffs, double x) {
 }
 
 
+// значение производной функции в точке x
 double df(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;
@@ -101,6 +107,7 @@ double df(const std::vector<double>& coeffs, double x) {
 }
 
 
+// значение второй производной функции в точке x
 double ddf(const std::vector<double>& coeffs, double x) {
     double result = 0.0;
     int n = coeffs.size() - 1;  
@@ -110,6 +117,7 @@ double ddf(const std::vector<double>& coeffs, double x) {
 }
 
 
+// оценка Лагранжа
 double lagrangeBound(const std::vector<double>& coeffs) {
     double A = fabs(coeffs[0]);
     if (A < 1e-15) return 1000.0;
@@ -122,6 +130,7 @@ double lagrangeBound(const std::vector<double>& coeffs) {
 }
 
 
+// поиск на интервала на котором располагается корень
 bool findInterval(const std::vector<double>& coeffs, double& a, double& b, double& fa, double& fb) {
     double R = lagrangeBound(coeffs);
     double step = R / 5000.0;
@@ -154,6 +163,7 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
 }
 
 
+// нахождение корней методом хорд
 double chord(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
@@ -189,6 +199,7 @@ double chord(const std::vector<double>& coeffs) {
 }
 
 
+// нахождение корней методом касательных
 double newton(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
@@ -241,6 +252,7 @@ double newton(const std::vector<double>& coeffs) {
     }
 
 
+// нахождение корней комбинированным методом 
 double combined(const std::vector<double>& coeffs) {
     double a, b, fa, fb;
     if (!findInterval(coeffs, a, b, fa, fb)) {
@@ -283,6 +295,7 @@ double combined(const std::vector<double>& coeffs) {
 }
 
 
+// отсеивание повторяющихся корней с точностью 0.01
 std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
     std::sort(roots.begin(), roots.end());
     std::vector<double> result;
