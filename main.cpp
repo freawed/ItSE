@@ -13,13 +13,10 @@ int main() {
 
     while (true) {
         std::cout << "Enter coefficients a b c d n m k:\n";
-
         std::string line;
         std::getline(std::cin, line);
-
         std::istringstream iss(line);
         double extra;
-
         if ((iss >> a >> b >> c >> d >> n >> m >> k) && !(iss >> extra)) {
             break;
         }
@@ -28,8 +25,6 @@ int main() {
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
     std::vector<double> roots;
-
-
     if (std::abs(coeffs[0]) > EPS) {
         double r = combined(coeffs);
         if (std::isfinite(r))
