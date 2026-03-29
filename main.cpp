@@ -30,21 +30,21 @@ int main() {
     // нахождение первого корня (комбинированый метод хорд-касателных)
     if (std::abs(coeffs[0]) > EPS) {
         double r = combined(coeffs);
-        roots.push_back(r);
+        if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     // нахождение второго корня (метод хорд)
     if (std::abs(coeffs[0]) > EPS) {
         double r = chord(coeffs);
-        roots.push_back(r);
+        if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
     // нахождение третьего корня (метод касательных)
     if (std::abs(coeffs[0]) > EPS) {
         double r = newton(coeffs);
-        roots.push_back(r);
+        if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
@@ -52,16 +52,16 @@ int main() {
     if (std::abs(coeffs[0]) > EPS) {
         std::vector<double> r = cardano(coeffs);
         for (double x : r)
-            roots.push_back(x);
+            if (std::isfinite(x)) roots.push_back(x);
     // нахождение оставшихся корней (формула Виета)
     } else if (std::abs(coeffs[1]) > EPS) {
         std::vector<double> r = viet(coeffs);
         for (double x : r)
-            roots.push_back(x);
+            if (std::isfinite(x)) roots.push_back(x);
     // нахождение оставшихся корней (-k/m)
     } else if (std::abs(coeffs[2]) > EPS) {
         double x = line_eq(coeffs);
-        roots.push_back(x);
+            if (std::isfinite(x)) roots.push_back(x);
     // проверка на наличие найденных корней 
     } else if (std::abs(coeffs[3]) > EPS) {
         if (roots.empty()) {
@@ -76,14 +76,19 @@ int main() {
     }
 
     // отсеивание повторяющихся корней (с точностью 0.01)
-    std::cout << "\nRoots:\n";{
     roots = unique_roots(roots, 0.01);
-        
-    // вывод найденных корней
+
+    // проверка на наличие корней
+    if (roots.empty()) {
+        std::cout << "No roots found.\n";
+        return 0;
+    }
+
+    // вывод корней, если они есть
+    std::cout << "\nRoots:\n";
     for (double r : roots) {
         if (std::isfinite(r))
             std::cout << r << std::endl;
-        }
     }
     return 0;
 }
