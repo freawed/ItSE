@@ -134,7 +134,7 @@ double lagrangeBound(const std::vector<double>& coeffs) {
 // поиск на интервала на котором располагается корень
 bool findInterval(const std::vector<double>& coeffs, double& a, double& b, double& fa, double& fb) {
     double R = lagrangeBound(coeffs);
-    double step = R / 25000.0;
+    double step = R / 50000.0;
     double x1 = -R;
     double f1 = f(coeffs, x1);
         
