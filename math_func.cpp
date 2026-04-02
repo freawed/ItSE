@@ -5,8 +5,8 @@
 #include "math_func.h"
 
 
-const double EPS = 1e-12;
-const int MAX_ITER = 1000;
+const double EPS = 1e-15;
+const int MAX_ITER = 2000;
 
 
 // нахождение корней линейного уравнения
@@ -134,31 +134,42 @@ double lagrangeBound(const std::vector<double>& coeffs) {
 // поиск на интервала на котором располагается корень
 bool findInterval(const std::vector<double>& coeffs, double& a, double& b, double& fa, double& fb) {
     double R = lagrangeBound(coeffs);
-    double step = R / 50000.0;
+    double step = R / 100000.0;
     double x1 = -R;
     double f1 = f(coeffs, x1);
-        
-    for (double x2 = -R + step; x2 <= R; x2 += step) {
+    double prevAbsF = std::abs(f1);
+    double xMinF = x1;
+    double minF = std::abs(f1);
+
+    for (double x2 = -R + step; x2 <= R + step; x2 += step) {
         double f2 = f(coeffs, x2);
-            
-        if (f1 * f2 <= 0) {
-            a = x1;
-            b = x2;
-            fa = f1;
-            fb = f2;        
+        double absF2 = std::abs(f2);
+
+        if (f1 * f2 < 0) {
+            a = x1; b = x2; fa = f1; fb = f2;
             return true;
         }
-            
-        if (std::abs(f1) < EPS) {
-            a = x1 - step;
-            b = x1 + step;
+
+        if (absF2 < EPS) {
+            a = x2 - step; b = x2 + step;
             fa = f(coeffs, a);
             fb = f(coeffs, b);
             return true;
         }
-            
-        x1 = x2;
-        f1 = f2;
+
+        if (absF2 < minF) { minF = absF2; xMinF = x2; }
+
+        if (absF2 > prevAbsF * 1.001 && minF < 1e-3) {
+            a = xMinF - step * 2;
+            b = xMinF + step * 2;
+            fa = f(coeffs, a);
+            fb = f(coeffs, b);
+            if (fa * fb <= 0 || minF < 1e-6) return true;
+            minF = absF2; xMinF = x2;
+        }
+
+        prevAbsF = absF2;
+        x1 = x2; f1 = f2;
     }
     return false;
 }
@@ -209,6 +220,8 @@ double newton(const std::vector<double>& coeffs) {
     double mid = (a + b) / 2.0;
     double f2_mid = ddf(coeffs, mid);
     double xn;
+    double x0;
+    int iter = 0;  
         
     if (fa * f2_mid > 0) {
         xn = a;
@@ -217,9 +230,7 @@ double newton(const std::vector<double>& coeffs) {
     } else {
         xn = mid;
     }
-        
-    double x0;
-    int iter = 0;        
+              
     do {
         iter++;
         x0 = xn;    
@@ -231,7 +242,7 @@ double newton(const std::vector<double>& coeffs) {
             x_new = (a + b) / 2.0;
         } else {
             x_new = xn - fx / dfx;
-        }
+        }       
             
         if (x_new < a || x_new > b) {
             x_new = (a + b) / 2.0;
@@ -242,12 +253,11 @@ double newton(const std::vector<double>& coeffs) {
             b = x_new;
             fb = f_new;
         } else {
-            a = x_new;
+            a = x_new;  
             fa = f_new;
         }
-        xn = x_new;    
-        if (iter > MAX_ITER) break;    
-        } while (std::abs(xn - x0) > EPS && std::abs(f(coeffs, xn)) > EPS);
+        xn = x_new;     
+        } while (std::abs(xn - x0) > EPS && std::abs(f(coeffs, xn)) > EPS && iter < MAX_ITER);
         
         return xn;
     }
@@ -261,24 +271,21 @@ double combined(const std::vector<double>& coeffs) {
     }
         
     double xn = (a + b) / 2.0;
-    double x_prev;
+    double x_prev = xn;
         
     for (int iter = 0; iter < MAX_ITER; iter++) {
         double x_chord = (a * fb - b * fa) / (fb - fa);
         double f_chord = f(coeffs, x_chord);
             
         double df_chord = df(coeffs, x_chord);
-        double x_newton;
             
         if (std::abs(df_chord) < EPS) {
-            x_newton = x_chord;
+            xn = x_chord;
         } else {
-            x_newton = x_chord - f_chord / df_chord;
-        }
+            xn = x_chord - f_chord / df_chord;
+        }   
             
-        xn = x_newton;
-        double fx = f(coeffs, xn);
-            
+        double fx = f(coeffs, xn);        
         if (std::abs(fx) < EPS || (iter > 0 && std::abs(xn - x_prev) < EPS)) {
             return xn;
         }
@@ -290,14 +297,13 @@ double combined(const std::vector<double>& coeffs) {
             fa = fx;
         }
         x_prev = xn;
-    }
-        
+    } 
     return xn;
 }
 
 
 // отсеивание повторяющихся корней с точностью 0.01
-std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
+std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.005){ 
     if (roots.empty()) return roots;
     std::sort(roots.begin(), roots.end());
     std::vector<double> result;
@@ -308,5 +314,27 @@ std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01) {
             result.push_back(roots[i]);
         }
     }
-    return result;
+                return result;
+}
+
+// округление корней
+double round_root(double x) {
+    double eps = 0.002;
+
+    // 1. Убираем маленькие числа → 0
+    if (std::abs(x) < eps) {
+        return 0.0;
+    }
+
+    // 2. Округление до целого
+    if (std::abs(std::round(x) - x) < eps) {
+        x = std::round(x);
+    }
+
+    // 3. Убираем -0
+    if (x == 0.0) {
+        return 0.0;
+    }
+
+    return x;
 }

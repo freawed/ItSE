@@ -87,8 +87,10 @@ int main() {
     // вывод корней, если они есть
     std::cout << "\nRoots:\n";
     for (double r : roots) {
-        if (std::isfinite(r))
+        if (std::isfinite(r)) {
+            r = round_root(r);
             std::cout << r << std::endl;
+        }
     }
     return 0;
 }

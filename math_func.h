@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>        
 
+double round_root(double x);
 double line_eq(const std::vector<double>& coeffs);
 std::vector<double> viet(const std::vector<double>& coeffs);
 std::vector<double> cardano(const std::vector<double>& coeffs);
