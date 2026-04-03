@@ -320,21 +320,21 @@ std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.005){
 // округление корней
 double round_root(double x) {
     double eps = 0.002;
-
-    // 1. Убираем маленькие числа → 0
     if (std::abs(x) < eps) {
         return 0.0;
     }
-
-    // 2. Округление до целого
     if (std::abs(std::round(x) - x) < eps) {
         x = std::round(x);
     }
-
-    // 3. Убираем -0
     if (x == 0.0) {
         return 0.0;
     }
-
     return x;
+}
+
+
+void normalize(std::vector<double>& coeffs) {
+    while (coeffs.size() > 1 && std::abs(coeffs[0]) < EPS) {
+        coeffs.erase(coeffs.begin());
+    }
 }

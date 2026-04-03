@@ -5,8 +5,8 @@
 #include <sstream>
 #include "math_func.h"
 
-const double EPS = 1e-12;
-const int MAX_ITER = 1000;
+const double EPS = 1e-15;
+const int MAX_ITER = 1500;
 
 int main() {
     double a, b, c, d, n, m, k;
@@ -26,42 +26,55 @@ int main() {
 
     std::vector<double> coeffs = {a, b, c, d, n, m, k};
     std::vector<double> roots;
+
+    normalize(coeffs);
+
+    int degree = coeffs.size() - 1;
     
     // нахождение первого корня (комбинированый метод хорд-касателных)
-    if (std::abs(coeffs[0]) > EPS) {
+    if (std::abs(coeffs[0]) > EPS && degree == 6) {
         double r = combined(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
+    degree = coeffs.size() - 1;
+
     // нахождение второго корня (метод хорд)
-    if (std::abs(coeffs[0]) > EPS) {
+    if (std::abs(coeffs[0]) > EPS && degree == 5) {
         double r = chord(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
+    degree = coeffs.size() - 1;
+
     // нахождение третьего корня (метод касательных)
-    if (std::abs(coeffs[0]) > EPS) {
+    if (std::abs(coeffs[0]) > EPS && degree == 4) {
         double r = newton(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
     }
 
+    degree = coeffs.size() - 1; 
+
     // нахождение оставшихся корней (метод Кардано)
-    if (std::abs(coeffs[0]) > EPS) {
+    if (std::abs(coeffs[0]) > EPS && degree == 3) {
         std::vector<double> r = cardano(coeffs);
         for (double x : r)
             if (std::isfinite(x)) roots.push_back(x);
+        degree = coeffs.size() - 1;
     // нахождение оставшихся корней (формула Виета)
-    } else if (std::abs(coeffs[1]) > EPS) {
+    } else if (std::abs(coeffs[1]) > EPS && degree == 2) {
         std::vector<double> r = viet(coeffs);
         for (double x : r)
             if (std::isfinite(x)) roots.push_back(x);
+        degree = coeffs.size() - 1;
     // нахождение оставшихся корней (-k/m)
-    } else if (std::abs(coeffs[2]) > EPS) {
+    } else if (std::abs(coeffs[2]) > EPS && degree == 1) {
         double x = line_eq(coeffs);
             if (std::isfinite(x)) roots.push_back(x);
+        degree = coeffs.size() - 1;
     // проверка на наличие найденных корней 
     } else if (std::abs(coeffs[3]) > EPS) {
         if (roots.empty()) {
