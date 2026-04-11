@@ -29,57 +29,57 @@ int main() {
 
     normalize(coeffs);
 
-    int degree = coeffs.size() - 1;
+    int deg = coeffs.size() - 1;
     
     // нахождение первого корня (комбинированый метод хорд-касателных)
-    if (degree == 6) {
+    if (deg == 6) {
         double r = combined(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
         normalize(coeffs);
     }
 
-    degree = coeffs.size() - 1;
+    deg = coeffs.size() - 1;
 
     // нахождение второго корня (метод хорд)
-    if (degree == 5) {
+    if (deg == 5) {
         double r = chord(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
         normalize(coeffs);
     }
 
-    degree = coeffs.size() - 1;
+    deg = coeffs.size() - 1;
 
     // нахождение третьего корня (метод касательных)
-    if (degree == 4) {
+    if (deg == 4) {
         double r = newton(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
         coeffs = horner(coeffs, r);
         normalize(coeffs);
     }
 
-    degree = coeffs.size() - 1; 
+    deg = coeffs.size() - 1; 
 
     // нахождение оставшихся корней (метод Кардано)
-    if (degree == 3) {
+    if (deg == 3) {
         std::vector<double> r = cardano(coeffs);
         for (double x : r)
             if (std::isfinite(x)) roots.push_back(x);
-        degree = coeffs.size() - 1;
+        deg = coeffs.size() - 1;
 
     // нахождение оставшихся корней (формула Виета)
-    } else if (degree == 2) {
+    } else if (deg == 2) {
         std::vector<double> r = viet(coeffs);
         for (double x : r)
             if (std::isfinite(x)) roots.push_back(x);
-        degree = coeffs.size() - 1;
+        deg = coeffs.size() - 1;
 
     // нахождение оставшихся корней (-k/m)
-    } else if (degree == 1) {
+    } else if (deg == 1) {
         double x = line_eq(coeffs);
             if (std::isfinite(x)) roots.push_back(x);
-        degree = coeffs.size() - 1;
+        deg = coeffs.size() - 1;
 
     // проверка на наличие найденных корней 
     } else if (std::abs(coeffs[3]) > EPS) {

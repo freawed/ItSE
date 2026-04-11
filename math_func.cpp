@@ -151,13 +151,17 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
         }
 
         if (absF2 < EPS) {
-            a = x2 - step; b = x2 + step;
+            a = x2 - step; 
+            b = x2 + step;
             fa = f(coeffs, a);
             fb = f(coeffs, b);
             return true;
         }
 
-        if (absF2 < minF) { minF = absF2; xMinF = x2; }
+        if (absF2 < minF) { 
+            minF = absF2; 
+            xMinF = x2; 
+        }
 
         if (absF2 > prevAbsF * 1.001 && minF < 1e-3) {
             a = xMinF - step * 2;
@@ -169,7 +173,8 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
         }
 
         prevAbsF = absF2;
-        x1 = x2; f1 = f2;
+        x1 = x2; 
+        f1 = f2;
     }
     return false;
 }
@@ -197,7 +202,7 @@ double chord(const std::vector<double>& coeffs) {
         if (std::abs(fx) < EPS || std::abs(x - x_prev) < EPS) {
             return x;
         }
-            
+        
         if (fa * fx <= 0) {
             b = x;
             fb = fx;
@@ -314,7 +319,7 @@ std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.005){
             result.push_back(roots[i]);
         }
     }
-                return result;
+    return result;
 }
 
 // округление корней
@@ -332,7 +337,7 @@ double round_root(double x) {
     return x;
 }
 
-
+// нормализация коэффициентов многочлена (удаление ведущих нулей)
 void normalize(std::vector<double>& coeffs) {
     while (coeffs.size() > 1 && std::abs(coeffs[0]) < EPS) {
         coeffs.erase(coeffs.begin());
