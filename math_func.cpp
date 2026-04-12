@@ -63,8 +63,8 @@ std::vector<double> cardano(const std::vector<double>& coeffs) {
         roots.push_back(2 * u - shift);
         roots.push_back(-u - shift);
     } else {
-        double r = std::sqrt(-(p*p*p) / 27.0);
-        double arg = -q / (2.0 * r);
+        double rd = std::sqrt(-(p*p*p) / 27.0);
+        double arg = -q / (2.0 * rd );
         arg = std::max(-1.0, std::min(1.0, arg));
 
         double phi = std::acos(arg);
@@ -146,7 +146,10 @@ bool findInterval(const std::vector<double>& coeffs, double& a, double& b, doubl
         double absF2 = std::abs(f2);
 
         if (f1 * f2 < 0) {
-            a = x1; b = x2; fa = f1; fb = f2;
+            a = x1; 
+            b = x2; 
+            fa = f1; 
+            fb = f2;
             return true;
         }
 
@@ -307,8 +310,8 @@ double combined(const std::vector<double>& coeffs) {
 }
 
 
-// отсеивание повторяющихся корней с точностью 0.01
-std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.005){ 
+// отсеивание повторяющихся корней
+std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01){ 
     if (roots.empty()) return roots;
     std::sort(roots.begin(), roots.end());
     std::vector<double> result;

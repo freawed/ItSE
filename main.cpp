@@ -6,7 +6,7 @@
 #include "math_func.h"
 
 const double EPS = 1e-15;
-const int MAX_ITER = 1500;
+const int MAX_ITER = 2000;
 
 int main() {
     double a, b, c, d, n, m, k;
@@ -30,8 +30,10 @@ int main() {
     normalize(coeffs);
 
     int deg = coeffs.size() - 1;
+    int deg = coeffs.size() - 1;
     
     // нахождение первого корня (комбинированый метод хорд-касателных)
+    if (deg == 6) {
     if (deg == 6) {
         double r = combined(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
@@ -40,8 +42,10 @@ int main() {
     }
 
     deg = coeffs.size() - 1;
+    deg = coeffs.size() - 1;
 
     // нахождение второго корня (метод хорд)
+    if (deg == 5) {
     if (deg == 5) {
         double r = chord(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
@@ -50,8 +54,10 @@ int main() {
     }
 
     deg = coeffs.size() - 1;
+    deg = coeffs.size() - 1;
 
     // нахождение третьего корня (метод касательных)
+    if (deg == 4) {
     if (deg == 4) {
         double r = newton(coeffs);
         if (std::isfinite(r)) roots.push_back(r);
@@ -60,8 +66,10 @@ int main() {
     }
 
     deg = coeffs.size() - 1; 
+    deg = coeffs.size() - 1; 
 
     // нахождение оставшихся корней (метод Кардано)
+    if (deg == 3) {
     if (deg == 3) {
         std::vector<double> r = cardano(coeffs);
         for (double x : r)
@@ -69,6 +77,7 @@ int main() {
         deg = coeffs.size() - 1;
 
     // нахождение оставшихся корней (формула Виета)
+    } else if (deg == 2) {
     } else if (deg == 2) {
         std::vector<double> r = viet(coeffs);
         for (double x : r)

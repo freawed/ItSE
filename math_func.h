@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>        
 
-double round_root(double x);
+double round_root(double x);    
 void normalize(std::vector<double>& coeffs);
 double line_eq(const std::vector<double>& coeffs);
 std::vector<double> viet(const std::vector<double>& coeffs);
