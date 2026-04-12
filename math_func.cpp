@@ -311,7 +311,7 @@ double combined(const std::vector<double>& coeffs) {
 
 
 // отсеивание повторяющихся корней
-std::vector<double> unique_roots(std::vector<double> roots, double eps = 0.01){ 
+std::vector<double> unique_roots(std::vector<double> roots, double eps){ 
     if (roots.empty()) return roots;
     std::sort(roots.begin(), roots.end());
     std::vector<double> result;
